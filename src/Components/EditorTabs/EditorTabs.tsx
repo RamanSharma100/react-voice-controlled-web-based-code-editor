@@ -13,7 +13,7 @@ const EditorTabs: FC<IEditorTabs> = ({
       {openedEditors.map((openedEditor: any, index: number) => (
         <div
           key={index * 4231}
-          className={`flex  px-3 py-2 rounded-t ${
+          className={`flex px-3 py-2 rounded-t ${
             openedEditor.isOpened
               ? "bg-white text-black"
               : "bg-black text-white"

@@ -2,6 +2,7 @@ import { FunctionComponent as FC, useState } from "react";
 
 import SideBar from "../../Components/SideBar/SideBar";
 import EditorTabs from "../../Components/EditorTabs/EditorTabs";
+import Editor from "../../Components/Editor/Editor";
 
 import ICodeEditor from "./ICodeEditor";
 import UserIcon from "../../assets/icons/user_icon.svg";
@@ -17,6 +18,7 @@ const CodeEditor: FC<ICodeEditor> = ({
   setSubSideBar,
 }) => {
   const [openedEditors, setOpenedEditors] = useState<any[]>([]);
+  const [openedEditorsContent, setOpenedEditorsContent] = useState<any[]>([]);
 
   const handleOpen = (file_name: string) => {
     setOpenedEditors((prevEditors: any) =>
@@ -29,10 +31,17 @@ const CodeEditor: FC<ICodeEditor> = ({
         return editor;
       })
     );
+    setOpenedEditorsContent((prevEditors: any) => [
+      ...prevEditors,
+      { file_name, content: "" },
+    ]);
   };
 
   const handleClose = (file_name: string) => {
     setOpenedEditors((prevEditors) =>
+      prevEditors.filter((editor: any) => editor.file_name !== file_name)
+    );
+    setOpenedEditorsContent((prevEditors) =>
       prevEditors.filter((editor: any) => editor.file_name !== file_name)
     );
   };
@@ -49,6 +58,18 @@ const CodeEditor: FC<ICodeEditor> = ({
             ).length +
               1),
           isOpened: false,
+        },
+      ]);
+      setOpenedEditorsContent((prevEditors: any) => [
+        ...prevEditors,
+        {
+          file_name:
+            "untitled-file " +
+            (prevEditors.filter((editor: any) =>
+              editor.file_name.includes("untitled-file")
+            ).length +
+              1),
+          content: "",
         },
       ]);
       handleOpen(
@@ -109,14 +130,14 @@ const CodeEditor: FC<ICodeEditor> = ({
                 subSideBar: "",
                 setSubSideBar: (subSideBar: string) => {},
               },
-              {
-                text: "Work Space",
-                isOpen: false,
-                setIsOpen: (isOpen: boolean) => {},
-                collapsable: true,
-                subSideBar: "",
-                setSubSideBar: (subSideBar: string) => {},
-              },
+              // {
+              //   text: "Work Space",
+              //   isOpen: false,
+              //   setIsOpen: (isOpen: boolean) => {},
+              //   collapsable: true,
+              //   subSideBar: "",
+              //   setSubSideBar: (subSideBar: string) => {},
+              // },
             ]}
           />
         ) : (
@@ -172,7 +193,36 @@ const CodeEditor: FC<ICodeEditor> = ({
           handleClose={handleClose}
           openNewFile={openNewFile}
         />
-        CodeEditor
+        {openedEditors.length > 0 &&
+        openedEditors.filter((editor: any) => editor.isOpened).length > 0 ? (
+          <Editor
+            file_data={
+              openedEditorsContent.find(
+                (editor1) =>
+                  editor1.file_name ===
+                  openedEditors.find((editor) => editor.isOpened).file_name
+              ).content
+            }
+            set_file_data={setOpenedEditorsContent}
+            opened_file={
+              openedEditors.find((editor) => editor.isOpened).file_name
+            }
+          />
+        ) : (
+          <div className="flex justify-center items-center mt-60">
+            <div className="text-center">
+              <h1 className="text-3xl">Welcome to Code Editor</h1>
+              <p className="text-lg py-4">Create a new file</p>
+              <button
+                type="button"
+                className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={openNewFile}
+              >
+                Create New File
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
