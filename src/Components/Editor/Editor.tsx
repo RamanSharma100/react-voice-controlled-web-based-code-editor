@@ -1,4 +1,4 @@
-import { FunctionComponent as FC, useEffect, useRef } from "react";
+import { FunctionComponent as FC } from "react";
 
 import IEditor from "./IEditor";
 

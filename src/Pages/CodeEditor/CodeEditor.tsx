@@ -19,6 +19,8 @@ const CodeEditor: FC<ICodeEditor> = ({
 }) => {
   const [openedEditors, setOpenedEditors] = useState<any[]>([]);
   const [openedEditorsContent, setOpenedEditorsContent] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>("");
 
   const handleOpen = (file_name: string) => {
     setOpenedEditors((prevEditors: any) =>
@@ -47,45 +49,77 @@ const CodeEditor: FC<ICodeEditor> = ({
   };
 
   const openNewFile = () => {
-    if (openedEditors.length < 5) {
-      setOpenedEditors((prevEditors: any) => [
-        ...prevEditors,
-        {
-          file_name:
-            "untitled-file " +
-            (prevEditors.filter((editor: any) =>
-              editor.file_name.includes("untitled-file")
-            ).length +
-              1),
-          isOpened: false,
-        },
-      ]);
-      setOpenedEditorsContent((prevEditors: any) => [
-        ...prevEditors,
-        {
-          file_name:
-            "untitled-file " +
-            (prevEditors.filter((editor: any) =>
-              editor.file_name.includes("untitled-file")
-            ).length +
-              1),
-          content: "",
-        },
-      ]);
-      handleOpen(
-        "untitled-file " +
-          (openedEditors.filter((editor: any) =>
-            editor.file_name.includes("untitled-file")
-          ).length +
-            1)
-      );
+    const recentFile: boolean =
+      openedEditors.filter((editor: any) => editor.file_name.includes(fileName))
+        .length > 0;
+    if (!recentFile) {
+      if (openedEditors.length < 5) {
+        setOpenedEditors((prevEditors: any) => [
+          ...prevEditors,
+          {
+            file_name: fileName,
+            isOpened: false,
+          },
+        ]);
+        setOpenedEditorsContent((prevEditors: any) => [
+          ...prevEditors,
+          {
+            file_name: fileName,
+            content: "",
+          },
+        ]);
+        handleOpen(fileName);
+        setFileName("");
+      } else {
+        alert("You can open only 5 files at a time");
+        setFileName("");
+      }
     } else {
-      alert("You can open only 5 files at a time");
+      alert("This file already exists");
     }
+  };
+
+  const createNewFile = () => {
+    setIsModalOpen(true);
   };
 
   return (
     <>
+      {isModalOpen && (
+        <div className="flex fixed transition-all delay-75 bg-black fade text-white left-0 top-0 flex-col items-center p-5 w-full z-10 h-full">
+          <h1 className="text-5xl font-bold py-10 mt-10 mb-5">
+            Create New File
+          </h1>
+          <form className="flex w-2/5 gap-10 flex-col items-center">
+            <input
+              className="w-full p-5 border border-t-0 border-l-0 border-r-0 outline-none bg-transparent"
+              type="text"
+              placeholder="Enter file name"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+            />
+            <div className="flex gap-2 w-full">
+              <button
+                className="w-3/6 py-3 px-5  outline-none bg-white text-black"
+                type="submit"
+                onClick={() => {
+                  openNewFile();
+                  setIsModalOpen(false);
+                }}
+              >
+                Create File
+              </button>
+              <button
+                className="w-3/6 py-3 px-5  outline-none bg-red-500 text-white"
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       {isSideBarOpen && (
         <SideBar
           list={[
@@ -191,7 +225,7 @@ const CodeEditor: FC<ICodeEditor> = ({
           openedEditors={openedEditors}
           handleOpen={handleOpen}
           handleClose={handleClose}
-          openNewFile={openNewFile}
+          createNewFile={createNewFile}
         />
         {openedEditors.length > 0 &&
         openedEditors.filter((editor: any) => editor.isOpened).length > 0 ? (
@@ -216,7 +250,7 @@ const CodeEditor: FC<ICodeEditor> = ({
               <button
                 type="button"
                 className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={openNewFile}
+                onClick={createNewFile}
               >
                 Create New File
               </button>
