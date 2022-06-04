@@ -3,6 +3,7 @@ import { FunctionComponent as FC, useState } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import EditorTabs from "../../Components/EditorTabs/EditorTabs";
 import Editor from "../../Components/Editor/Editor";
+import VoiceAssistant from "../../Components/VoiceAssistant/VoiceAssistant";
 
 import ICodeEditor from "./ICodeEditor";
 import UserIcon from "../../assets/icons/user_icon.svg";
@@ -85,6 +86,7 @@ const CodeEditor: FC<ICodeEditor> = ({
 
   return (
     <>
+      <VoiceAssistant />
       {isModalOpen && (
         <div className="flex fixed transition-all delay-75 bg-black fade text-white left-0 top-0 flex-col items-center p-5 w-full z-10 h-full">
           <h1 className="text-5xl font-bold py-10 mt-10 mb-5">
