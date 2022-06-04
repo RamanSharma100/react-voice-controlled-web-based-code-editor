@@ -4,7 +4,12 @@ import IEditor from "./IEditor";
 
 import "./Editor.css";
 
-const Editor: FC<IEditor> = ({ file_data, opened_file, set_file_data }) => {
+const Editor: FC<IEditor> = ({
+  file_data,
+  opened_file,
+  set_file_data,
+  textAreaRef,
+}) => {
   const handleChange = (e: any) => {
     set_file_data((prevFileData: any) =>
       prevFileData.map((file: any) => {
@@ -30,7 +35,7 @@ const Editor: FC<IEditor> = ({ file_data, opened_file, set_file_data }) => {
           ))}
         </div> */}
         <textarea
-          // ref={textAreaRef}
+          ref={textAreaRef}
           className="editor w-full font-mono max-w-full text-lg p-5 border-0 outline-none bg-transparent resize-none mt-4 ml-5 h-full"
           value={file_data}
           placeholder="Type your code here"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { recognition } from "../APIs/speechRecognitionAPI";
+// import { recognition } from "../APIs/speechRecognitionAPI";
 
 interface IProps {
   callbackFunctions?: any;
@@ -23,7 +23,7 @@ const useSpeechSynthesis = (props: IProps = {}) => {
 
   const handleEnd = () => {
     setSpeaking(false);
-    // callbackFunctions[0](false);
+    // callbackFunctions[1](false);
     callbackFunctions[0]("");
     onEnd();
   };

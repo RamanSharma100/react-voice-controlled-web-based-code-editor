@@ -1,4 +1,4 @@
-const voiceCommandsDataJSON = {};
+import voiceCommands from "../../data/voiceCommands";
 
 export interface ICheckCommands {
   commandName: string;
@@ -10,11 +10,9 @@ const checkCommands = (command: string): ICheckCommands => {
   let cmdType: string = "",
     cmdName: string = "";
 
-  for (let cTypeIndex in Object.keys(voiceCommandsDataJSON)) {
-    const cType = Object.keys(voiceCommandsDataJSON)[cTypeIndex];
-    const commandName: string = (voiceCommandsDataJSON as any)[
-      cType
-    ].commands.find(
+  for (let cTypeIndex in Object.keys(voiceCommands)) {
+    const cType = Object.keys(voiceCommands)[cTypeIndex];
+    const commandName: string = (voiceCommands as any)[cType].commands.find(
       (cmd: string) =>
         command.toLowerCase().trim().includes(cmd.toLowerCase().trim()) && cmd
     );
@@ -28,13 +26,13 @@ const checkCommands = (command: string): ICheckCommands => {
   // console.log({
   //   commandName: cmdName,
   //   commandType: cmdType,
-  //   commandAction: (voiceCommandsDataJSON as any)[cmdType]?.actions[0],
+  //   commandAction: (voiceCommands as any)[cmdType]?.actions[0],
   // });
 
   return {
     commandName: cmdName,
     commandType: cmdType,
-    commandAction: (voiceCommandsDataJSON as any)[cmdType]?.actions[0],
+    commandAction: (voiceCommands as any)[cmdType]?.actions[0],
   };
 };
 

@@ -2,28 +2,38 @@ import { FunctionComponent as FC, useEffect, useState } from "react";
 import { recognition } from "../../APIs/speechRecognitionAPI";
 import useSpeechSynthesis from "../../hooks/useSpeechSynthesis";
 import checkCommands, { ICheckCommands } from "./checkCommands";
+
 import "./VoiceAssistant.css";
 
 import IVoiceAssistant from "./IVoiceAssistant";
+import voiceCommands from "../../data/voiceCommands";
 
-const VoiceAssistant: FC<IVoiceAssistant> = ({}: IVoiceAssistant) => {
-  //   const {
-  //     name: { responses },
-  //   }: IVoiceCommandsDataJSON = voiceCommandsDataJSON;
-
+const VoiceAssistant: FC<IVoiceAssistant> = ({
+  setText,
+  text,
+  isSpeaking,
+  setIsSpeaking,
+  openedEditors,
+  openedEditorsContent,
+  setOpenedEditors,
+  setOpenedEditorsContent,
+  textAreaRef,
+}) => {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isStarted, setIsStarted] = useState<boolean>(false);
-  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
-  const [text, setText] = useState<string>("");
+
+  let cursorCurrentPosition = 0;
 
   const { speak, speaking, supported } = useSpeechSynthesis({
-    callbackFunctions: [setText],
+    callbackFunctions: [setText, setIsSpeaking],
   });
 
   useEffect(() => {
-    if (!isSpeaking) {
+    if (speaking) {
+      setIsSpeaking(true);
+      //   setTimeout(() => setText(""), 5000);
+    } else {
       setIsSpeaking(false);
-      // setTimeout(() => setText(""), 5000);
     }
   }, [speaking]);
 
@@ -53,6 +63,49 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({}: IVoiceAssistant) => {
 
     const { commandAction, commandType, commandName }: ICheckCommands =
       checkCommands(command);
+
+    if (commandType === "snippet") {
+      const lang: string = commandName.split(" ").reverse()[1];
+      const commandData = (voiceCommands as any)[commandType];
+      const snippet =
+        commandData.code[commandData.commands.indexOf(commandName)];
+      const response =
+        commandData.responses[commandData.commands.indexOf(commandName)];
+
+      if (
+        openedEditors.find((editor: any) => editor.isOpened === true) !==
+        undefined
+      ) {
+        const fileName = (
+          openedEditors.find((editor: any) => editor.isOpened === true) as any
+        ).file_name;
+        const content = (
+          openedEditorsContent.find(
+            (editor: any) => editor.file_name === fileName
+          ) as any
+        ).content;
+        setText(response);
+        speak({ text: response });
+        setOpenedEditorsContent((prevEditors: any) =>
+          prevEditors.map((editor: any) => {
+            if (editor.file_name === fileName) {
+              editor.content = content + snippet;
+            }
+            return editor;
+          })
+        );
+        // if (null !== textAreaRef.current) {
+        //   textAreaRef.current.focus();
+        //   cursorCurrentPosition = textAreaRef.current.selectionStart;
+        //   console.log(cursorCurrentPosition);
+        // }
+
+        // console.log(snippet);
+      } else {
+        setText("please open a file first!");
+        speak({ text: "please open a file first!" });
+      }
+    }
   };
 
   recognition.onend = () => {
@@ -75,7 +128,7 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({}: IVoiceAssistant) => {
         } w-100 h-100 relative flex items-center justify-center  rounded-full`}
         onClick={handleMute}
       >
-        {(isSpeaking || speaking) && (
+        {(isSpeaking || speaking) && text && (
           <p className=" float-text  pr-4 pl-2 text-black absolute right-3/4">
             {text}
           </p>
@@ -85,10 +138,14 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({}: IVoiceAssistant) => {
           style={{ fontSize: "1rem" }}
         ></i>
         <div
-          className={`${speaking || isSpeaking ? "speaking3" : "d-none"}`}
+          className={`${
+            (speaking || isSpeaking) && text ? "speaking3" : "d-none"
+          }`}
         ></div>
         <div
-          className={`${speaking || isSpeaking ? "speaking4" : "d-none"}`}
+          className={`${
+            (speaking || isSpeaking) && text ? "speaking4" : "d-none"
+          }`}
         ></div>
       </div>
     </div>

@@ -1,12 +1,15 @@
-import CodeEditor from "./Pages/CodeEditor/CodeEditor";
+import { useState } from "react";
 
 import "./App.css";
-import { useState } from "react";
+
+import CodeEditor from "./Pages/CodeEditor/CodeEditor";
 
 const App = () => {
   const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
   const [isSubSideBarOpen, setIsSubSideBarOpen] = useState<boolean>(false);
   const [subSideBar, setSubSideBar] = useState<string>("");
+  const [text, setText] = useState<string>("");
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   return (
     <div className="App">
@@ -17,6 +20,10 @@ const App = () => {
         setIsSideBarOpen={setIsSideBarOpen}
         setIsSubSideBarOpen={setIsSubSideBarOpen}
         setSubSideBar={setSubSideBar}
+        text={text}
+        setText={setText}
+        isSpeaking={isSpeaking}
+        setIsSpeaking={setIsSpeaking}
       />
     </div>
   );

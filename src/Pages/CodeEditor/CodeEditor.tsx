@@ -1,4 +1,5 @@
-import { FunctionComponent as FC, useState } from "react";
+import { FunctionComponent as FC, useEffect, useRef, useState } from "react";
+import useSpeechSynthesis from "../../hooks/useSpeechSynthesis";
 
 import SideBar from "../../Components/SideBar/SideBar";
 import EditorTabs from "../../Components/EditorTabs/EditorTabs";
@@ -17,11 +18,30 @@ const CodeEditor: FC<ICodeEditor> = ({
   setIsSideBarOpen,
   setIsSubSideBarOpen,
   setSubSideBar,
+  text,
+  setText,
+  isSpeaking,
+  setIsSpeaking,
 }) => {
   const [openedEditors, setOpenedEditors] = useState<any[]>([]);
   const [openedEditorsContent, setOpenedEditorsContent] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { speak, speaking } = useSpeechSynthesis({
+    callbackFunctions: [setText, setIsSpeaking],
+  });
+
+  useEffect(() => {
+    if (speaking) {
+      setIsSpeaking(true);
+      //   setTimeout(() => setText(""), 5000);
+    } else {
+      setIsSpeaking(false);
+    }
+  }, [speaking]);
 
   const handleOpen = (file_name: string) => {
     setOpenedEditors((prevEditors: any) =>
@@ -70,13 +90,19 @@ const CodeEditor: FC<ICodeEditor> = ({
           },
         ]);
         handleOpen(fileName);
+        setText(`created ${fileName} !`);
+        speak({ text: `created ${fileName} !` });
         setFileName("");
       } else {
-        alert("You can open only 5 files at a time");
+        // alert("You can open only 5 files at a time");
+        setText("You can open only 5 files at a time");
+        speak({ text: "You can open only 5 files at a time" });
         setFileName("");
       }
     } else {
-      alert("This file already exists");
+      // alert("This file already exists");
+      setText("This file already exists");
+      speak({ text: "This file already exists" });
     }
   };
 
@@ -86,7 +112,17 @@ const CodeEditor: FC<ICodeEditor> = ({
 
   return (
     <>
-      <VoiceAssistant />
+      <VoiceAssistant
+        text={text}
+        setText={setText}
+        isSpeaking={isSpeaking}
+        setIsSpeaking={setIsSpeaking}
+        openedEditors={openedEditors}
+        setOpenedEditors={setOpenedEditors}
+        openedEditorsContent={openedEditorsContent}
+        setOpenedEditorsContent={setOpenedEditorsContent}
+        textAreaRef={textAreaRef}
+      />
       {isModalOpen && (
         <div className="flex fixed transition-all delay-75 bg-black fade text-white left-0 top-0 flex-col items-center p-5 w-full z-10 h-full">
           <h1 className="text-5xl font-bold py-10 mt-10 mb-5">
@@ -232,6 +268,7 @@ const CodeEditor: FC<ICodeEditor> = ({
         {openedEditors.length > 0 &&
         openedEditors.filter((editor: any) => editor.isOpened).length > 0 ? (
           <Editor
+            textAreaRef={textAreaRef}
             file_data={
               openedEditorsContent.find(
                 (editor1) =>
