@@ -34,6 +34,40 @@ const voiceCommands = {
     responses: ["Here is your html snippet", "Here is your react snippet"],
     code: [snippets.html, snippets.react],
   },
+  div: {
+    commands: [
+      "generate div with class",
+      "generate div tag with class",
+      "generate div with id",
+      "generate div tag with id",
+      "generate div",
+      "generate div tag",
+    ],
+    actions: [
+      "generatedivwithclass",
+      "generatedivwithclass",
+      "generatedivwithid",
+      "generatedivwithid",
+      "generatediv",
+      "generatediv",
+    ],
+    responses: [
+      "Here is your div tag with class",
+      "Here is your div tag with class",
+      "Here is your div tag with id",
+      "Here is your div tag with id",
+      "Here is your div tag",
+      "Here is your div tag",
+    ],
+    code: [
+      `<div class="class_name"></div>`,
+      `<div class="class_name"></div>`,
+      `<div id="id_name"></div>`,
+      `<div id="id_name"></div>`,
+      `<div></div>`,
+      `<div></div>`,
+    ],
+  },
 };
 
 export default voiceCommands;

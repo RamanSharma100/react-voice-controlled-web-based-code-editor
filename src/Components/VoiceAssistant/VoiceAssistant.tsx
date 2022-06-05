@@ -51,6 +51,9 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
     }
   };
 
+  // cursor position
+  let cursorPosition = 0;
+
   // recognition
 
   recognition.onstart = () => {
@@ -60,6 +63,7 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
 
   recognition.onresult = (event: any) => {
     const command = event.results[0][0].transcript.toLowerCase();
+    console.log(command);
 
     const { commandAction, commandType, commandName }: ICheckCommands =
       checkCommands(command);
@@ -105,6 +109,45 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
         setText("please open a file first!");
         speak({ text: "please open a file first!" });
       }
+    }
+    if (commandType === "div") {
+      // find cursor position
+      if (null !== textAreaRef.current) {
+        cursorPosition = textAreaRef.current.selectionStart;
+        console.log(cursorPosition);
+      }
+
+      const openedFile: any = openedEditors.find(
+        (editor: any) => editor.isOpened === true
+      );
+
+      setOpenedEditorsContent((prevEditors: any) =>
+        prevEditors.map((editor: any) => {
+          if (editor.file_name === openedFile.file_name) {
+            if (null !== textAreaRef.current) {
+              editor.content =
+                textAreaRef.current.value.substring(0, cursorPosition) +
+                (voiceCommands as any)[commandType].code[
+                  (voiceCommands as any)[commandType].commands.indexOf(
+                    commandName
+                  )
+                ] +
+                textAreaRef.current.value.substring(cursorPosition);
+            }
+          }
+          return editor;
+        })
+      );
+      setText(
+        (voiceCommands as any)[commandType].responses[
+          (voiceCommands as any)[commandType].commands.indexOf(commandName)
+        ]
+      );
+      speak({
+        text: (voiceCommands as any)[commandType].responses[
+          (voiceCommands as any)[commandType].commands.indexOf(commandName)
+        ],
+      });
     }
   };
 
