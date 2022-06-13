@@ -43,7 +43,7 @@ const CodeEditor: FC<ICodeEditor> = ({
     }
   }, [speaking]);
 
-  const handleOpen = (file_name: string) => {
+  const handleOpen = (file_name: string, from: string = "") => {
     setOpenedEditors((prevEditors: any) =>
       prevEditors.map((editor: any) => {
         if (editor.file_name === file_name) {
@@ -58,6 +58,10 @@ const CodeEditor: FC<ICodeEditor> = ({
       ...prevEditors,
       { file_name, content: "" },
     ]);
+    if (from === "") {
+      setText(`Opened ${file_name}!`);
+      speak({ text: `Opened ${file_name}!` });
+    }
   };
 
   const handleClose = (file_name: string) => {
@@ -67,6 +71,8 @@ const CodeEditor: FC<ICodeEditor> = ({
     setOpenedEditorsContent((prevEditors) =>
       prevEditors.filter((editor: any) => editor.file_name !== file_name)
     );
+    setText(`${file_name} closed!`);
+    speak({ text: `${file_name} closed!` });
   };
 
   const openNewFile = () => {
@@ -89,9 +95,9 @@ const CodeEditor: FC<ICodeEditor> = ({
             content: "",
           },
         ]);
-        handleOpen(fileName);
-        setText(`created ${fileName} !`);
-        speak({ text: `created ${fileName} !` });
+        handleOpen(fileName, "dialog");
+        setText(`created and opened ${fileName} !`);
+        speak({ text: `created and opened ${fileName} !` });
         setFileName("");
       } else {
         // alert("You can open only 5 files at a time");
@@ -108,6 +114,12 @@ const CodeEditor: FC<ICodeEditor> = ({
 
   const createNewFile = () => {
     setIsModalOpen(true);
+    setText(
+      "Enter file name with extension and click on submit to create a new file! "
+    );
+    speak({
+      text: "Enter file name with extension and click on submit to create a new file!",
+    });
   };
 
   return (
@@ -150,7 +162,11 @@ const CodeEditor: FC<ICodeEditor> = ({
               <button
                 className="w-3/6 py-3 px-5  outline-none bg-red-500 text-white"
                 type="button"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setText("File creation cancelled!");
+                  speak({ text: "File creation cancelled!" });
+                }}
               >
                 Cancel
               </button>
