@@ -21,4 +21,6 @@ export default interface ISideBar {
   setIsSubSideBarOpen: any;
   title?: Ititle;
   list: Ilist[];
+  setText?: any;
+  speak?: ({ text }: { text: string }) => void;
 }

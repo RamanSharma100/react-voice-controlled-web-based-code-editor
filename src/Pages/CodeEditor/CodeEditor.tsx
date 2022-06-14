@@ -81,24 +81,29 @@ const CodeEditor: FC<ICodeEditor> = ({
         .length > 0;
     if (!recentFile) {
       if (openedEditors.length < 5) {
-        setOpenedEditors((prevEditors: any) => [
-          ...prevEditors,
-          {
-            file_name: fileName,
-            isOpened: false,
-          },
-        ]);
-        setOpenedEditorsContent((prevEditors: any) => [
-          ...prevEditors,
-          {
-            file_name: fileName,
-            content: "",
-          },
-        ]);
-        handleOpen(fileName, "dialog");
-        setText(`created and opened ${fileName} !`);
-        speak({ text: `created and opened ${fileName} !` });
-        setFileName("");
+        if (fileName !== "") {
+          setOpenedEditors((prevEditors: any) => [
+            ...prevEditors,
+            {
+              file_name: fileName,
+              isOpened: false,
+            },
+          ]);
+          setOpenedEditorsContent((prevEditors: any) => [
+            ...prevEditors,
+            {
+              file_name: fileName,
+              content: "",
+            },
+          ]);
+          handleOpen(fileName, "dialog");
+          setText(`created and opened ${fileName} !`);
+          speak({ text: `created and opened ${fileName} !` });
+          setFileName("");
+        } else {
+          setText(`Please enter a file name!`);
+          speak({ text: `Please enter a file name!` });
+        }
       } else {
         // alert("You can open only 5 files at a time");
         setText("You can open only 5 files at a time");
@@ -201,6 +206,8 @@ const CodeEditor: FC<ICodeEditor> = ({
           setIsSubSideBarOpen={setIsSubSideBarOpen}
           mainSideBar={true}
           title={{ text: "Guest User", icon: UserIcon }}
+          setText={setText}
+          speak={speak}
         />
       )}
       {isSideBarOpen && isSubSideBarOpen ? (
@@ -227,6 +234,8 @@ const CodeEditor: FC<ICodeEditor> = ({
               //   setSubSideBar: (subSideBar: string) => {},
               // },
             ]}
+            setText={setText}
+            speak={speak}
           />
         ) : (
           <SideBar
@@ -243,6 +252,8 @@ const CodeEditor: FC<ICodeEditor> = ({
                 setSubSideBar: (subSideBar: string) => {},
               },
             ]}
+            setText={setText}
+            speak={speak}
           />
         )
       ) : null}
@@ -270,6 +281,8 @@ const CodeEditor: FC<ICodeEditor> = ({
             className="ml-auto text-black bg-white py-1 px-4 fixed left-0.5 z-10"
             onClick={() => {
               setIsSideBarOpen(true);
+              setText("Main side bar opened!");
+              speak({ text: "Main side bar opened!" });
             }}
           >
             {"> "}

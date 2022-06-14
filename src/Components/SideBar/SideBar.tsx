@@ -9,6 +9,8 @@ const SideBar: FC<ISideBar> = ({
   setSubSideBar,
   setIsSubSideBarOpen,
   setIsSideBarOpen,
+  setText,
+  speak,
 }) => {
   return (
     <div
@@ -43,6 +45,16 @@ const SideBar: FC<ISideBar> = ({
                 setIsSideBarOpen(false);
                 setIsSubSideBarOpen(false);
                 setSubSideBar("");
+                if (mainSideBar) {
+                  if (setText) {
+                    setText(`Main sidebar closed!`);
+                  }
+                  if (speak) {
+                    speak({
+                      text: `Main sidebar closed!`,
+                    });
+                  }
+                }
               }}
             >
               {"< "}
@@ -75,6 +87,27 @@ const SideBar: FC<ISideBar> = ({
                         : true
                     );
                     item.setSubSideBar(item.text.toLowerCase());
+
+                    if (mainSideBar) {
+                      if (setText) {
+                        setText(
+                          item.isOpen
+                            ? item.subSideBar === item.text.toLowerCase()
+                              ? `${item.text} Tab closed!`
+                              : `${item.text} Tab opened!`
+                            : `${item.text} Tab opened!`
+                        );
+                      }
+                      if (speak) {
+                        speak({
+                          text: item.isOpen
+                            ? item.subSideBar === item.text.toLowerCase()
+                              ? `${item.text} Tab closed!`
+                              : `${item.text} Tab opened!`
+                            : `${item.text} Tab opened!`,
+                        });
+                      }
+                    }
                   }}
                 >
                   {item.icon && (
