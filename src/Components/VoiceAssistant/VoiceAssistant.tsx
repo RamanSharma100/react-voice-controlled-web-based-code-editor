@@ -61,9 +61,47 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
     setIsStarted(true);
   };
 
+  const writeCode = (
+    data: string,
+    commandType: string,
+    commandName: string
+  ) => {
+    if (null !== textAreaRef.current) {
+      cursorPosition = textAreaRef.current.selectionStart;
+      console.log(cursorPosition);
+    }
+
+    const openedFile: any = openedEditors.find(
+      (editor: any) => editor.isOpened === true
+    );
+
+    setOpenedEditorsContent((prevEditors: any) =>
+      prevEditors.map((editor: any) => {
+        if (editor.file_name === openedFile.file_name) {
+          if (null !== textAreaRef.current) {
+            editor.content =
+              textAreaRef.current.value.substring(0, cursorPosition) +
+              data +
+              textAreaRef.current.value.substring(cursorPosition);
+          }
+        }
+        return editor;
+      })
+    );
+    setText(
+      (voiceCommands as any)[commandType].responses[
+        (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      ]
+    );
+    speak({
+      text: (voiceCommands as any)[commandType].responses[
+        (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      ],
+    });
+  };
+
   recognition.onresult = (event: any) => {
     const command = event.results[0][0].transcript.toLowerCase();
-    console.log(command);
 
     const { commandAction, commandType, commandName }: ICheckCommands =
       checkCommands(command);
@@ -117,37 +155,106 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
         console.log(cursorPosition);
       }
 
-      const openedFile: any = openedEditors.find(
-        (editor: any) => editor.isOpened === true
-      );
+      // const openedFile: any = openedEditors.find(
+      //   (editor: any) => editor.isOpened === true
+      // );
 
-      setOpenedEditorsContent((prevEditors: any) =>
-        prevEditors.map((editor: any) => {
-          if (editor.file_name === openedFile.file_name) {
-            if (null !== textAreaRef.current) {
-              editor.content =
-                textAreaRef.current.value.substring(0, cursorPosition) +
-                (voiceCommands as any)[commandType].code[
-                  (voiceCommands as any)[commandType].commands.indexOf(
-                    commandName
-                  )
-                ] +
-                textAreaRef.current.value.substring(cursorPosition);
-            }
-          }
-          return editor;
-        })
-      );
-      setText(
-        (voiceCommands as any)[commandType].responses[
-          (voiceCommands as any)[commandType].commands.indexOf(commandName)
-        ]
-      );
-      speak({
-        text: (voiceCommands as any)[commandType].responses[
+      writeCode(
+        (voiceCommands as any)[commandType].code[
           (voiceCommands as any)[commandType].commands.indexOf(commandName)
         ],
-      });
+        commandType,
+        commandName
+      );
+      // setOpenedEditorsContent((prevEditors: any) =>
+      //   prevEditors.map((editor: any) => {
+      //     if (editor.file_name === openedFile.file_name) {
+      //       if (null !== textAreaRef.current) {
+      //         editor.content =
+      //           textAreaRef.current.value.substring(0, cursorPosition) +
+      //           (voiceCommands as any)[commandType].code[
+      //             (voiceCommands as any)[commandType].commands.indexOf(
+      //               commandName
+      //             )
+      //           ] +
+      //           textAreaRef.current.value.substring(cursorPosition);
+      //       }
+      //     }
+      //     return editor;
+      //   })
+      // );
+      // setText(
+      //   (voiceCommands as any)[commandType].responses[
+      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      //   ]
+      // );
+      // speak({
+      //   text: (voiceCommands as any)[commandType].responses[
+      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      //   ],
+      // });
+    }
+    console.log(commandType);
+
+    if (commandType === "function") {
+      const function_name = command
+        .split("name")
+        .pop()
+        .split(" ")
+        .join("_")
+        .replace(".", "")
+        .trim();
+      const params = command
+        .split("params")
+        .pop()
+        .split("and")
+        .join(",")
+        .replace(".", "")
+        .trim();
+
+      let code = (voiceCommands as any)[commandType].code[
+        (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      ];
+
+      const response = (voiceCommands as any)[commandType].responses[
+        (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      ];
+
+      if (function_name) code = code.replace("function_name", function_name);
+
+      if (params) code = code.replace("parameters", params);
+
+      if (null !== textAreaRef.current) {
+        cursorPosition = textAreaRef.current.selectionStart;
+        console.log(cursorPosition);
+      }
+
+      writeCode(code, commandType, commandName);
+      // const openedFile: any = openedEditors.find(
+      //   (editor: any) => editor.isOpened === true
+      // );
+
+      // setOpenedEditorsContent((prevEditors: any) =>
+      //   prevEditors.map((editor: any) => {
+      //     if (editor.file_name === openedFile.file_name) {
+      //       if (null !== textAreaRef.current) {
+      //         editor.content =
+      //           textAreaRef.current.value.substring(0, cursorPosition) +
+      //           code +
+      //           textAreaRef.current.value.substring(cursorPosition);
+      //       }
+      //     }
+      //     return editor;
+      //   })
+      // );
+      // setText(
+      //   (voiceCommands as any)[commandType].responses[
+      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
+      //   ]
+      // );
+      // speak({
+      //   text: response,
+      // });
     }
   };
 

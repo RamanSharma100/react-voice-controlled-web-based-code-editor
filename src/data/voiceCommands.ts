@@ -68,6 +68,34 @@ const voiceCommands = {
       `<div></div>`,
     ],
   },
+  function: {
+    commands: [
+      "generate function",
+      "generate function with name",
+      "generate function with parameters",
+    ],
+    actions: [
+      "generatefunction",
+      "generatefunctionwithname",
+      "generatefunctionwithparameters",
+    ],
+    responses: [
+      "Here is your function",
+      "Here is your function with name",
+      "Here is your function with parameters",
+    ],
+    code: [
+      `function function_name() {
+        // code
+      }`,
+      `function function_name() {
+        // code
+      }`,
+      `function function_name(parameters) {
+        // code
+      }`,
+    ],
+  },
 };
 
 export default voiceCommands;
