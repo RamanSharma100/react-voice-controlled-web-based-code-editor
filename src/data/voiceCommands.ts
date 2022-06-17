@@ -68,6 +68,24 @@ const voiceCommands = {
       `<div></div>`,
     ],
   },
+  tag: {
+    commands: [
+      "generate tag",
+      "generate tag with class",
+      "generate tag with id",
+    ],
+    actions: ["generatetag", "generatetagwithclass", "generatetagwithid"],
+    responses: [
+      "Here is your tag",
+      "Here is your tag with class",
+      "Here is your tag with id",
+    ],
+    code: [
+      `<tag></tag>`,
+      `<tag class="class_name"></tag>`,
+      `<tag id="id_name"></tag>`,
+    ],
+  },
   function: {
     commands: [
       "generate function",
@@ -95,6 +113,27 @@ const voiceCommands = {
         // code
       }`,
     ],
+  },
+  createFile: {
+    commands: [
+      "create file",
+      "create file with name",
+      "generate file",
+      "generate file with name",
+    ],
+    actions: [
+      "createfile",
+      "createfilewithname",
+      "generatefile",
+      "generatefilewithname",
+    ],
+    responses: [
+      "Here is your file",
+      "Here is your file with name",
+      "Here is your file",
+      "Here is your file with name",
+    ],
+    code: [],
   },
 };
 

@@ -75,30 +75,30 @@ const CodeEditor: FC<ICodeEditor> = ({
     speak({ text: `${file_name} closed!` });
   };
 
-  const openNewFile = () => {
+  const openNewFile = (file: string = "") => {
     const recentFile: boolean =
       openedEditors.filter((editor: any) => editor.file_name.includes(fileName))
         .length > 0;
     if (!recentFile) {
       if (openedEditors.length < 5) {
-        if (fileName !== "") {
+        if (fileName !== "" || file !== "") {
           setOpenedEditors((prevEditors: any) => [
             ...prevEditors,
             {
-              file_name: fileName,
+              file_name: fileName || file,
               isOpened: false,
             },
           ]);
           setOpenedEditorsContent((prevEditors: any) => [
             ...prevEditors,
             {
-              file_name: fileName,
+              file_name: fileName || file,
               content: "",
             },
           ]);
-          handleOpen(fileName, "dialog");
-          setText(`created and opened ${fileName} !`);
-          speak({ text: `created and opened ${fileName} !` });
+          handleOpen(fileName || file, "dialog");
+          setText(`created and opened ${fileName || file} !`);
+          speak({ text: `created and opened ${fileName || file} !` });
           setFileName("");
         } else {
           setText(`Please enter a file name!`);
@@ -117,14 +117,16 @@ const CodeEditor: FC<ICodeEditor> = ({
     }
   };
 
-  const createNewFile = () => {
+  const createNewFile = (from: string = "") => {
     setIsModalOpen(true);
-    setText(
-      "Enter file name with extension and click on submit to create a new file! "
-    );
-    speak({
-      text: "Enter file name with extension and click on submit to create a new file!",
-    });
+    if (from === "") {
+      setText(
+        "Enter file name with extension and click on submit to create a new file! "
+      );
+      speak({
+        text: "Enter file name with extension and click on submit to create a new file!",
+      });
+    }
   };
 
   return (
@@ -139,6 +141,10 @@ const CodeEditor: FC<ICodeEditor> = ({
         openedEditorsContent={openedEditorsContent}
         setOpenedEditorsContent={setOpenedEditorsContent}
         textAreaRef={textAreaRef}
+        createNewFile={createNewFile}
+        cancelFileCreation={setIsModalOpen}
+        openNewFile={openNewFile}
+        setFileName={setFileName}
       />
       {isModalOpen && (
         <div className="flex fixed transition-all delay-75 bg-black fade text-white left-0 top-0 flex-col items-center p-5 w-full z-10 h-full">
@@ -318,7 +324,7 @@ const CodeEditor: FC<ICodeEditor> = ({
               <button
                 type="button"
                 className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={createNewFile}
+                onClick={() => createNewFile()}
               >
                 Create New File
               </button>

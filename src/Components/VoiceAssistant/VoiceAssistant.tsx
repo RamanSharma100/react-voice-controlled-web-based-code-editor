@@ -18,11 +18,15 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
   setOpenedEditors,
   setOpenedEditorsContent,
   textAreaRef,
+  createNewFile,
+  cancelFileCreation,
+  setFileName,
+  openNewFile,
 }) => {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isStarted, setIsStarted] = useState<boolean>(false);
-
-  let cursorCurrentPosition = 0;
+  const [generateTag, setGenerateTag] = useState<boolean>(false);
+  const [createFile, setCreateFile] = useState<boolean>(false);
 
   const { speak, speaking, supported } = useSpeechSynthesis({
     callbackFunctions: [setText, setIsSpeaking],
@@ -31,7 +35,6 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
   useEffect(() => {
     if (speaking) {
       setIsSpeaking(true);
-      //   setTimeout(() => setText(""), 5000);
     } else {
       setIsSpeaking(false);
     }
@@ -106,155 +109,188 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
     const { commandAction, commandType, commandName }: ICheckCommands =
       checkCommands(command);
 
-    if (commandType === "snippet") {
-      const lang: string = commandName.split(" ").reverse()[1];
-      const commandData = (voiceCommands as any)[commandType];
-      const snippet =
-        commandData.code[commandData.commands.indexOf(commandName)];
-      const response =
-        commandData.responses[commandData.commands.indexOf(commandName)];
-
-      if (
-        openedEditors.find((editor: any) => editor.isOpened === true) !==
-        undefined
-      ) {
-        const fileName = (
-          openedEditors.find((editor: any) => editor.isOpened === true) as any
-        ).file_name;
-        const content = (
-          openedEditorsContent.find(
-            (editor: any) => editor.file_name === fileName
-          ) as any
-        ).content;
-        setText(response);
-        speak({ text: response });
-        setOpenedEditorsContent((prevEditors: any) =>
-          prevEditors.map((editor: any) => {
-            if (editor.file_name === fileName) {
-              editor.content = content + snippet;
-            }
-            return editor;
-          })
+    if (createFile) {
+      if (Object.keys(voiceCommands).includes(commandType)) {
+        setText(
+          " create file command is activated now. please say file name with extension to generate that file, or,  say cancel to cancel the command"
         );
-        // if (null !== textAreaRef.current) {
-        //   textAreaRef.current.focus();
-        //   cursorCurrentPosition = textAreaRef.current.selectionStart;
-        //   console.log(cursorCurrentPosition);
-        // }
-
-        // console.log(snippet);
+        speak({
+          text: " create file command is activated now. please say file name with extension to generate that file, or,  say cancel to cancel the command",
+        });
+      } else if (command.replace(".", "") === "cancel") {
+        setText(" cancelled creating file command!");
+        speak({ text: " cancelled creating file command!" });
+        cancelFileCreation(false);
+        setCreateFile(false);
       } else {
-        setText("please open a file first!");
-        speak({ text: "please open a file first!" });
+        setFileName(
+          command
+            .replace("create", "")
+            .trim()
+            .split(" ")
+            .join("")
+            .trim()
+            .replace(".", "")
+            .replace("dot", ".")
+            .trim()
+        );
+        openNewFile(
+          command
+            .replace("create", "")
+            .trim()
+            .split(" ")
+            .join("")
+            .trim()
+            .replace(".", "")
+            .replace("dot", ".")
+            .trim()
+        );
+        setCreateFile(false);
+        cancelFileCreation(false);
       }
     }
-    if (commandType === "div") {
-      // find cursor position
-      if (null !== textAreaRef.current) {
-        cursorPosition = textAreaRef.current.selectionStart;
-        console.log(cursorPosition);
+
+    if (!generateTag) {
+      if (commandType === "createFile") {
+        if (["generatefile", "createfile"].includes(commandAction.toString())) {
+          setText(
+            "Which file do you want to generate? say create file_name with extension to generate file. or, say cancel to cancel"
+          );
+          speak({
+            text: "Which file do you want to generate? create file_name with extension to generate file. or, say cancel to cancel  ",
+          });
+          createNewFile("voiceCommand");
+          setCreateFile(true);
+        }
       }
 
-      // const openedFile: any = openedEditors.find(
-      //   (editor: any) => editor.isOpened === true
-      // );
+      if (commandType === "snippet") {
+        const lang: string = commandName.split(" ").reverse()[1];
+        const commandData = (voiceCommands as any)[commandType];
+        const snippet =
+          commandData.code[commandData.commands.indexOf(commandName)];
+        const response =
+          commandData.responses[commandData.commands.indexOf(commandName)];
 
-      writeCode(
-        (voiceCommands as any)[commandType].code[
+        if (
+          openedEditors.find((editor: any) => editor.isOpened === true) !==
+          undefined
+        ) {
+          const fileName = (
+            openedEditors.find((editor: any) => editor.isOpened === true) as any
+          ).file_name;
+          const content = (
+            openedEditorsContent.find(
+              (editor: any) => editor.file_name === fileName
+            ) as any
+          ).content;
+          setText(response);
+          speak({ text: response });
+          setOpenedEditorsContent((prevEditors: any) =>
+            prevEditors.map((editor: any) => {
+              if (editor.file_name === fileName) {
+                editor.content = content + snippet;
+              }
+              return editor;
+            })
+          );
+          // if (null !== textAreaRef.current) {
+          //   textAreaRef.current.focus();
+          //   cursorCurrentPosition = textAreaRef.current.selectionStart;
+          //   console.log(cursorCurrentPosition);
+          // }
+
+          // console.log(snippet);
+        } else {
+          setText("please open a file first!");
+          speak({ text: "please open a file first!" });
+        }
+      }
+      if (commandType === "div") {
+        // find cursor position
+        if (null !== textAreaRef.current) {
+          cursorPosition = textAreaRef.current.selectionStart;
+          console.log(cursorPosition);
+        }
+
+        writeCode(
+          (voiceCommands as any)[commandType].code[
+            (voiceCommands as any)[commandType].commands.indexOf(commandName)
+          ],
+          commandType,
+          commandName
+        );
+      }
+
+      if (commandType === "tag") {
+        setText(
+          "Which tag do you want to generate? say tag_name to generate tag. or, say cancel to cancel"
+        );
+        speak({
+          text: "Which tag do you want to generate? say tag_name to generate tag. or, say cancel to cancel  ",
+        });
+        setGenerateTag(true);
+      }
+
+      if (commandType === "function") {
+        const function_name = command
+          .split("name")
+          .pop()
+          .split(" ")
+          .join("_")
+          .replace(".", "")
+          .trim();
+        const params = command
+          .split("params")
+          .pop()
+          .split("and")
+          .join(",")
+          .replace(".", "")
+          .trim();
+
+        let code = (voiceCommands as any)[commandType].code[
           (voiceCommands as any)[commandType].commands.indexOf(commandName)
-        ],
-        commandType,
-        commandName
-      );
-      // setOpenedEditorsContent((prevEditors: any) =>
-      //   prevEditors.map((editor: any) => {
-      //     if (editor.file_name === openedFile.file_name) {
-      //       if (null !== textAreaRef.current) {
-      //         editor.content =
-      //           textAreaRef.current.value.substring(0, cursorPosition) +
-      //           (voiceCommands as any)[commandType].code[
-      //             (voiceCommands as any)[commandType].commands.indexOf(
-      //               commandName
-      //             )
-      //           ] +
-      //           textAreaRef.current.value.substring(cursorPosition);
-      //       }
-      //     }
-      //     return editor;
-      //   })
-      // );
-      // setText(
-      //   (voiceCommands as any)[commandType].responses[
-      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
-      //   ]
-      // );
-      // speak({
-      //   text: (voiceCommands as any)[commandType].responses[
-      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
-      //   ],
-      // });
-    }
-    console.log(commandType);
+        ];
 
-    if (commandType === "function") {
-      const function_name = command
-        .split("name")
-        .pop()
-        .split(" ")
-        .join("_")
-        .replace(".", "")
-        .trim();
-      const params = command
-        .split("params")
-        .pop()
-        .split("and")
-        .join(",")
-        .replace(".", "")
-        .trim();
+        const response = (voiceCommands as any)[commandType].responses[
+          (voiceCommands as any)[commandType].commands.indexOf(commandName)
+        ];
 
-      let code = (voiceCommands as any)[commandType].code[
-        (voiceCommands as any)[commandType].commands.indexOf(commandName)
-      ];
+        if (function_name) code = code.replace("function_name", function_name);
 
-      const response = (voiceCommands as any)[commandType].responses[
-        (voiceCommands as any)[commandType].commands.indexOf(commandName)
-      ];
+        if (params) code = code.replace("parameters", params);
 
-      if (function_name) code = code.replace("function_name", function_name);
+        if (null !== textAreaRef.current) {
+          cursorPosition = textAreaRef.current.selectionStart;
+          console.log(cursorPosition);
+        }
 
-      if (params) code = code.replace("parameters", params);
-
-      if (null !== textAreaRef.current) {
-        cursorPosition = textAreaRef.current.selectionStart;
-        console.log(cursorPosition);
+        writeCode(code, commandType, commandName);
       }
-
-      writeCode(code, commandType, commandName);
-      // const openedFile: any = openedEditors.find(
-      //   (editor: any) => editor.isOpened === true
-      // );
-
-      // setOpenedEditorsContent((prevEditors: any) =>
-      //   prevEditors.map((editor: any) => {
-      //     if (editor.file_name === openedFile.file_name) {
-      //       if (null !== textAreaRef.current) {
-      //         editor.content =
-      //           textAreaRef.current.value.substring(0, cursorPosition) +
-      //           code +
-      //           textAreaRef.current.value.substring(cursorPosition);
-      //       }
-      //     }
-      //     return editor;
-      //   })
-      // );
-      // setText(
-      //   (voiceCommands as any)[commandType].responses[
-      //     (voiceCommands as any)[commandType].commands.indexOf(commandName)
-      //   ]
-      // );
-      // speak({
-      //   text: response,
-      // });
+    } else if (Object.keys(voiceCommands).includes(commandType)) {
+      setText(
+        " generate tag command is activated now. please say tag name to generate that tag, or,  say cancel to cancel the command"
+      );
+      speak({
+        text: " generate tag command is activated now. please say tag name to generate that tag, or,  say cancel to cancel the command",
+      });
+    } else {
+      if (command.replace(".", "") === "cancel") {
+        setText("cancelled generate tag command!");
+        speak({ text: "cancelled generate tag command!" });
+        setGenerateTag(false);
+      } else {
+        if (command.length > 2) {
+          writeCode(
+            (voiceCommands as any)["tag"].code[
+              (voiceCommands as any)["tag"].commands.indexOf("generate tag")
+            ].replaceAll("tag", command.replace(".", "")),
+            "tag",
+            "generate tag"
+          );
+          setGenerateTag(false);
+        }
+      }
     }
   };
 

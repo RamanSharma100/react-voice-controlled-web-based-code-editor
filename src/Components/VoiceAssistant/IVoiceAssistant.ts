@@ -10,4 +10,8 @@ export default interface IVoiceAssistant {
   openedEditorsContent: string[];
   setOpenedEditorsContent: Dispatch<SetStateAction<string[]>>;
   textAreaRef: RefObject<HTMLTextAreaElement>;
+  createNewFile: (from?: string) => void;
+  cancelFileCreation: Dispatch<SetStateAction<boolean>>;
+  openNewFile: (file?: string) => void;
+  setFileName: Dispatch<SetStateAction<string>>;
 }
