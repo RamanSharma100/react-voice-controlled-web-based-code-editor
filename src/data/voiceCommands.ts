@@ -135,6 +135,25 @@ const voiceCommands = {
     ],
     code: [],
   },
+  stopCommands: {
+    commands: ["stop", "exit", "quit"],
+    responses: ["Bye", "Goodbye", "See you later"],
+    actions: ["stop"],
+    info: "Stops Listening voice commands",
+  },
+  openCommands: {
+    commands: [
+      "open commands",
+      "open command list",
+      "show commands",
+      "show command list",
+      "show commands list",
+      "open commands list",
+    ],
+    responses: ["Opening commands list"],
+    actions: ["openCommands"],
+    info: "Opens the commands list",
+  },
 };
 
 export default voiceCommands;
