@@ -22,6 +22,7 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
   cancelFileCreation,
   setFileName,
   openNewFile,
+  setIsSideBarOpen,
 }) => {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isStarted, setIsStarted] = useState<boolean>(false);
@@ -151,6 +152,25 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
     }
 
     if (!generateTag) {
+      if (commandType === "stopCommands") {
+        setIsMuted(true);
+        setIsStarted(false);
+        setText("stopped taking commands! Thank you!");
+        speak({ text: "stopped taking commands! Thank you!" });
+      }
+
+      if (commandType === "openSideBar") {
+        setIsSideBarOpen(true);
+        setText("opened side bar!");
+        speak({ text: "opened side bar!" });
+      }
+
+      if (commandType === "closeSideBar") {
+        setIsSideBarOpen(false);
+        setText("closed side bar!");
+        speak({ text: "closed side bar!" });
+      }
+
       if (commandType === "createFile") {
         if (["generatefile", "createfile"].includes(commandAction.toString())) {
           setText(

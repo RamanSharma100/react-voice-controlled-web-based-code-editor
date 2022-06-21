@@ -14,4 +14,5 @@ export default interface IVoiceAssistant {
   cancelFileCreation: Dispatch<SetStateAction<boolean>>;
   openNewFile: (file?: string) => void;
   setFileName: Dispatch<SetStateAction<string>>;
+  setIsSideBarOpen: (isOpen: boolean) => void;
 }

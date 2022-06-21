@@ -33,6 +33,7 @@ const voiceCommands = {
     actions: ["generatehtmlsnippet", "generatereactsnippet"],
     responses: ["Here is your html snippet", "Here is your react snippet"],
     code: [snippets.html, snippets.react],
+    info: "This command will generate a html snippet or a react snippet",
   },
   div: {
     commands: [
@@ -67,6 +68,7 @@ const voiceCommands = {
       `<div></div>`,
       `<div></div>`,
     ],
+    info: "This command generates a div tag with class or id",
   },
   tag: {
     commands: [
@@ -85,6 +87,7 @@ const voiceCommands = {
       `<tag class="class_name"></tag>`,
       `<tag id="id_name"></tag>`,
     ],
+    info: "This command will generate a tag with class or id",
   },
   function: {
     commands: [
@@ -113,27 +116,29 @@ const voiceCommands = {
         // code
       }`,
     ],
+    info: "This command will generate a function with name or parameters",
   },
   createFile: {
     commands: [
       "create file",
-      "create file with name",
+      // "create file with name",
       "generate file",
-      "generate file with name",
+      // "generate file with name",
     ],
     actions: [
       "createfile",
-      "createfilewithname",
+      // "createfilewithname",
       "generatefile",
-      "generatefilewithname",
+      // "generatefilewithname",
     ],
     responses: [
       "Here is your file",
-      "Here is your file with name",
+      // "Here is your file with name",
       "Here is your file",
-      "Here is your file with name",
+      // "Here is your file with name",
     ],
     code: [],
+    info: "this command is used to trigger the creation of a file",
   },
   stopCommands: {
     commands: ["stop", "exit", "quit"],
@@ -153,6 +158,46 @@ const voiceCommands = {
     responses: ["Opening commands list"],
     actions: ["openCommands"],
     info: "Opens the commands list",
+  },
+  openSideBar: {
+    commands: [
+      "open sidebar",
+      "show sidebar",
+      "show side bar",
+      "open side bar",
+      "open main side bar",
+      "show main side bar",
+    ],
+    responses: ["Opened sidebar"],
+    actions: [
+      "openSideBar",
+      "openSideBar",
+      "openSideBar",
+      "openSideBar",
+      "openSideBar",
+      "openSideBar",
+    ],
+    info: "Opens the sidebar",
+  },
+  closeSideBar: {
+    commands: [
+      "close sidebar",
+      "hide sidebar",
+      "hide side bar",
+      "close side bar",
+      "close main side bar",
+      "hide main side bar",
+    ],
+    responses: ["Closed sidebar"],
+    actions: [
+      "closeSideBar",
+      "closeSideBar",
+      "closeSideBar",
+      "closeSideBar",
+      "closeSideBar",
+      "closeSideBar",
+    ],
+    info: "Closes the sidebar",
   },
 };
 
