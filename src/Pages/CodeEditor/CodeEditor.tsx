@@ -10,6 +10,8 @@ import ICodeEditor from "./ICodeEditor";
 import UserIcon from "../../assets/icons/user_icon.svg";
 import FileClosedIcon from "../../assets/icons/file_closed_icon.svg";
 import SearchIcon from "../../assets/icons/search_icon.svg";
+import MicrophoneIcon from "../../assets/icons/microphone_icon.svg";
+
 import AllCommands from "../../Components/AllCommands/AllCommands";
 
 const CodeEditor: FC<ICodeEditor> = ({
@@ -148,8 +150,16 @@ const CodeEditor: FC<ICodeEditor> = ({
         openNewFile={openNewFile}
         setFileName={setFileName}
         setIsSideBarOpen={setIsSideBarOpen}
+        setCommandsOpened={setCommandsOpened}
+        commandsOpened={commandsOpened}
       />
-      {!commandsOpened && <AllCommands />}
+      {commandsOpened && (
+        <AllCommands
+          setCommandsOpened={setCommandsOpened}
+          setText={setText}
+          speak={speak}
+        />
+      )}
       {isModalOpen && (
         <div className="flex fixed transition-all delay-75 bg-black fade text-white left-0 top-0 flex-col items-center p-5 w-full z-10 h-full">
           <h1 className="text-5xl font-bold py-10 mt-10 mb-5">
@@ -209,6 +219,15 @@ const CodeEditor: FC<ICodeEditor> = ({
               collapsable: false,
               isOpen: isSubSideBarOpen,
               setIsOpen: setIsSubSideBarOpen,
+            },
+            {
+              subSideBar,
+              setSubSideBar,
+              icon: MicrophoneIcon,
+              text: "Commands Table",
+              collapsable: false,
+              isOpen: isSubSideBarOpen,
+              setIsOpen: setCommandsOpened,
             },
           ]}
           setIsSideBarOpen={setIsSideBarOpen}

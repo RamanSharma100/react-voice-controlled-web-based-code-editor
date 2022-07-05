@@ -23,6 +23,8 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
   setFileName,
   openNewFile,
   setIsSideBarOpen,
+  setCommandsOpened,
+  commandsOpened,
 }) => {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isStarted, setIsStarted] = useState<boolean>(false);
@@ -226,6 +228,33 @@ const VoiceAssistant: FC<IVoiceAssistant> = ({
           speak({ text: "please open a file first!" });
         }
       }
+
+      if (commandType === "openCommands") {
+        if (commandsOpened) {
+          setText("Commands table is already open!");
+          speak({ text: "Commands table is already open!" });
+        } else {
+          setText("Opening commands List");
+          speak({
+            text: "Opening commands List",
+          });
+          setCommandsOpened(true);
+        }
+      }
+
+      if (commandType === "closeCommands") {
+        if (!commandsOpened) {
+          setText("Commands table is already closed!");
+          speak({ text: "Commands table is already closed!" });
+        } else {
+          setText("Closing commands List");
+          speak({
+            text: "Closing commands List",
+          });
+          setCommandsOpened(false);
+        }
+      }
+
       if (commandType === "div") {
         // find cursor position
         if (null !== textAreaRef.current) {

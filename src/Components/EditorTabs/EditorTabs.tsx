@@ -40,7 +40,7 @@ const EditorTabs: FC<IEditorTabs> = ({
       {openedEditors.length < 5 && (
         <div
           key={4231 * 4513}
-          onClick={createNewFile}
+          onClick={() => createNewFile()}
           className="text-white px-3 py-2 rounded-t bg-black hover:bg-white hover:text-black transition duration-300 ease-in-out cursor-pointer"
         >
           Add New Editor +

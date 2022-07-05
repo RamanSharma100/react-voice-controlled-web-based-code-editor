@@ -159,6 +159,19 @@ const voiceCommands = {
     actions: ["openCommands"],
     info: "Opens the commands list",
   },
+  closeCommands: {
+    commands: [
+      "close commands",
+      "close command list",
+      "hide commands",
+      "hide command list",
+      "hide commands list",
+      "close commands list",
+    ],
+    responses: ["Closing commands list"],
+    actions: ["closeCommands"],
+    info: "Closes the commands list",
+  },
   openSideBar: {
     commands: [
       "open sidebar",
