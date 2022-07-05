@@ -226,7 +226,7 @@ const CodeEditor: FC<ICodeEditor> = ({
               icon: MicrophoneIcon,
               text: "Commands Table",
               collapsable: false,
-              isOpen: isSubSideBarOpen,
+              isOpen: commandsOpened,
               setIsOpen: setCommandsOpened,
             },
           ]}
