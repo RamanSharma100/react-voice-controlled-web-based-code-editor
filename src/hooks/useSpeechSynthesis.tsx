@@ -36,7 +36,7 @@ const useSpeechSynthesis = (props: IProps = {}) => {
 
   const speak = (args: IArgs = {}) => {
     const {
-      voice = null,
+      voice = window.speechSynthesis.getVoices(),
       text = "",
       rate = 1,
       pitch = 1,
@@ -53,7 +53,9 @@ const useSpeechSynthesis = (props: IProps = {}) => {
       new window.SpeechSynthesisUtterance();
 
     utterance.text = text;
-    utterance.voice = voice;
+    utterance.voice = voice.filter(function (vc: any) {
+      return vc.name == "Alex";
+    })[0];
     utterance.onend = handleEnd;
     utterance.rate = rate;
     utterance.pitch = pitch;
