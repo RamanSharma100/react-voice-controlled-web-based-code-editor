@@ -53,8 +53,9 @@ const useSpeechSynthesis = (props: IProps = {}) => {
       new window.SpeechSynthesisUtterance();
 
     utterance.text = text;
+    console.log(voice);
     utterance.voice = voice.filter(function (vc: any) {
-      return vc.name == "Alex";
+      return vc.name.includes("David - English (United States)");
     })[0];
     utterance.onend = handleEnd;
     utterance.rate = rate;
